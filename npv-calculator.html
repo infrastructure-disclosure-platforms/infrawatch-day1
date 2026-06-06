@@ -48,21 +48,31 @@
   h1{margin:0 0 12px;font-size:clamp(1.8rem,3.6vw,2.7rem);line-height:1.05;color:var(--brand-deep)}
   .lede{margin:0;max-width:64ch;color:var(--mid);font-size:1.04rem}
 
-  /* Plain-language explainer band: three steps, concept then disclosure problem. */
+  /* Plain-language explainer band: one-line headlines + tiny illustration,
+     full sentence revealed on click via native <details>. */
   .explainer{
-    display:grid;grid-template-columns:1fr;gap:14px;margin:0 0 30px;
+    display:grid;grid-template-columns:1fr;gap:10px;margin:0 0 30px;
     background:var(--white);border:1px solid var(--light);border-radius:var(--radius);
-    box-shadow:var(--shadow);padding:22px 22px 24px;
+    box-shadow:var(--shadow);padding:16px 18px;
   }
-  @media(min-width:760px){.explainer{grid-template-columns:repeat(3,1fr);gap:24px}}
-  .ex-step{display:flex;gap:12px;align-items:flex-start}
+  @media(min-width:760px){.explainer{grid-template-columns:repeat(3,1fr);gap:18px;align-items:start}}
+  .ex-step{border-radius:10px}
+  .ex-step > summary{
+    display:flex;gap:10px;align-items:center;cursor:pointer;list-style:none;
+    padding:8px 4px;border-radius:8px;
+  }
+  .ex-step > summary::-webkit-details-marker{display:none}
+  .ex-step > summary:hover{background:var(--surface)}
   .ex-step .ex-num{
-    flex:0 0 auto;width:26px;height:26px;border-radius:50%;
-    background:var(--brand);color:var(--white);font-family:var(--mono);font-size:.82rem;
-    display:flex;align-items:center;justify-content:center;font-weight:700;margin-top:2px;
+    flex:0 0 auto;width:24px;height:24px;border-radius:50%;
+    background:var(--brand);color:var(--white);font-family:var(--mono);font-size:.78rem;
+    display:flex;align-items:center;justify-content:center;font-weight:700;
   }
-  .ex-step p{margin:0;font-size:.9rem;color:var(--mid);line-height:1.5}
-  .ex-step strong{color:var(--brand-deep)}
+  .ex-step .ex-head{font-size:.9rem;font-weight:700;color:var(--brand-deep);line-height:1.3}
+  .ex-step .ex-head::after{content:" \25be";color:var(--brand-soft);font-weight:400}
+  .ex-step[open] .ex-head::after{content:" \25b4"}
+  .ex-step .ex-art{margin:6px 0 2px 34px}
+  .ex-step p{margin:8px 0 6px 34px;font-size:.86rem;color:var(--mid);line-height:1.5}
 
   .grid{display:grid;grid-template-columns:1fr;gap:22px}
   @media(min-width:760px){.grid{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr)}}
@@ -79,7 +89,34 @@
 
   .field{margin-bottom:16px}
   .field label{display:block;font-weight:600;font-size:.92rem;margin-bottom:5px;color:var(--brand-deep)}
-  .field .hint{display:block;font-size:.78rem;color:var(--mid);margin-bottom:7px}
+  .field .hint{display:block;font-size:.78rem;color:var(--mid);margin-top:6px}
+
+  /* Per-field help: a small "?" that expands plain-language what/why/where. */
+  .label-row{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+  .label-row label{margin-bottom:0}
+  details.help{position:relative}
+  details.help > summary{
+    list-style:none;cursor:pointer;width:18px;height:18px;border-radius:50%;
+    border:1px solid var(--brand-soft);color:var(--brand);background:var(--white);
+    font-size:.72rem;font-weight:700;line-height:16px;text-align:center;
+  }
+  details.help > summary::-webkit-details-marker{display:none}
+  details.help[open] > summary{background:var(--brand);color:var(--white);border-color:var(--brand)}
+  .help-body{
+    margin-top:8px;padding:11px 13px;background:var(--surface);
+    border:1px solid var(--light);border-left:3px solid var(--brand-soft);border-radius:0 8px 8px 0;
+  }
+  .help-body p{margin:0 0 7px;font-size:.8rem;color:var(--mid);line-height:1.5}
+  .help-body p:last-child{margin-bottom:0}
+  .help-body b{color:var(--brand-deep)}
+  .help-eg{font-family:var(--mono);background:var(--white);border:1px solid var(--light);
+    border-radius:6px;padding:6px 9px;color:var(--brand-deep) !important}
+  .help-hint{font-family:var(--mono);font-size:.74rem;color:var(--brand);
+    border:1px solid var(--brand-soft);border-radius:10px;padding:1px 7px;white-space:nowrap}
+
+  .input-suffix{display:flex;align-items:center;gap:8px}
+  .input-suffix input{flex:1}
+  .input-suffix .suffix{font-family:var(--mono);color:var(--mid)}
   input[type="text"],input[type="number"],textarea{
     width:100%;font-family:var(--mono);font-size:.95rem;color:var(--dark);
     padding:9px 11px;border:1px solid #c8d2dc;border-radius:8px;background:var(--white);
@@ -158,12 +195,6 @@
   .sens-row .r-verdict{font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;min-width:52px;text-align:right;font-weight:700}
   .v-green{color:var(--green)} .v-amber{color:var(--amber)} .v-red{color:var(--red)}
 
-  .examples{margin:24px 0 4px;display:flex;flex-wrap:wrap;gap:8px}
-  .examples button{
-    font-family:var(--mono);font-size:.8rem;color:var(--brand);background:var(--white);
-    border:1px solid #c8d2dc;border-radius:20px;padding:6px 14px;cursor:pointer;
-  }
-  .examples button:hover{border-color:var(--brand);background:var(--surface)}
 
   footer{margin-top:34px;padding-top:16px;border-top:1px solid var(--light);font-size:.78rem;color:var(--mid)}
   footer .neutral{font-style:italic}
@@ -185,70 +216,129 @@
     <p class="kicker">Net present value &middot; does the project pay for itself?</p>
     <h1>Testing whether a public project pays for itself</h1>
     <p class="lede">
-      Net present value (NPV) compares what the public pays for an infrastructure project with what
-      it gets back over the project&rsquo;s life, with future money pulled back to what it is worth today.
-      Enter what the record shows and read the result as a policy message, not a yes or no.
+      NPV compares what the public pays with what it gets back, future money pulled to today&rsquo;s value.
+      Read the result as a policy message, not a yes or no.
     </p>
   </header>
 
-  <!-- Plain-language explainer: the concept and the problem it solves. Not a pitch. -->
+  <!-- Plain-language explainer: one-line headlines, full sentence on demand.
+       Native <details> so it works without JS and stays keyboard-accessible. -->
   <section class="explainer">
-    <div class="ex-step">
-      <span class="ex-num">1</span>
-      <p><strong>Money today is worth more than money tomorrow.</strong> A shilling spent now could have
-      earned interest, so a shilling returned in ten years is worth less than one returned today.
-      NPV accounts for that gap with a discount rate.</p>
-    </div>
-    <div class="ex-step">
-      <span class="ex-num">2</span>
-      <p><strong>Discount the future, then compare.</strong> Pull every future cost and benefit back to
-      today&rsquo;s value, add them up, and set the total against what the public paid up front. If the
-      discounted benefits clear the costs, the project pays for itself.</p>
-    </div>
-    <div class="ex-step">
-      <span class="ex-num">3</span>
-      <p><strong>The answer is only as honest as the disclosure.</strong> NPV runs on the financing terms,
-      costs and revenues that are actually disclosed. Where the loan terms are sealed, the test cannot
-      see the poison. The limit is disclosure, not the maths.</p>
-    </div>
+    <details class="ex-step">
+      <summary><span class="ex-num">1</span><span class="ex-head">Money today beats money tomorrow.</span></summary>
+      <!-- Bars shrinking left to right: same shilling, worth less each year. -->
+      <svg class="ex-art" width="150" height="44" viewBox="0 0 150 44" role="img" aria-label="A row of coins shrinking the further into the future they arrive.">
+        <g fill="var(--brand)">
+          <circle cx="14" cy="22" r="13"/><circle cx="51" cy="24" r="10.5" opacity=".78"/>
+          <circle cx="85" cy="26" r="8.5" opacity=".56"/><circle cx="116" cy="28" r="6.5" opacity=".38"/>
+          <circle cx="140" cy="29" r="5" opacity=".24"/>
+        </g>
+        <text x="14" y="26" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">$</text>
+        <line x1="6" y1="42" x2="148" y2="42" stroke="var(--light)" stroke-width="1.5"/>
+        <text x="14" y="43" dy="9" text-anchor="middle" fill="var(--mid)" font-size="7" font-family="monospace">today</text>
+        <text x="140" y="43" dy="9" text-anchor="middle" fill="var(--mid)" font-size="7" font-family="monospace">later</text>
+      </svg>
+      <p>A shilling spent now could have earned interest, so a shilling returned in ten years is worth
+      less than one returned today. NPV accounts for that gap with a discount rate.</p>
+    </details>
+    <details class="ex-step">
+      <summary><span class="ex-num">2</span><span class="ex-head">Pull the future back, then compare.</span></summary>
+      <!-- Future benefit piles pulled left to today, weighed against the cost. -->
+      <svg class="ex-art" width="150" height="44" viewBox="0 0 150 44" role="img" aria-label="Future benefits pulled back to today and weighed against the upfront cost.">
+        <rect x="6" y="8" width="13" height="30" rx="2" fill="var(--red)" opacity=".8"/>
+        <text x="12" y="6" text-anchor="middle" fill="var(--mid)" font-size="7" font-family="monospace">cost</text>
+        <g fill="var(--green)" opacity=".85">
+          <rect x="60" y="20" width="11" height="18" rx="2"/><rect x="86" y="24" width="11" height="14" rx="2"/>
+          <rect x="110" y="27" width="11" height="11" rx="2"/>
+        </g>
+        <path d="M58 14 H30" stroke="var(--brand)" stroke-width="1.6" fill="none" marker-end="url(#ar)"/>
+        <defs><marker id="ar" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+          <path d="M0 0 L6 3 L0 6 Z" fill="var(--brand)"/></marker></defs>
+        <text x="92" y="6" text-anchor="middle" fill="var(--mid)" font-size="7" font-family="monospace">future benefits</text>
+      </svg>
+      <p>Pull every future cost and benefit back to today&rsquo;s value, add them up, and set the total
+      against what the public paid up front. If the discounted benefits clear the costs, the project
+      pays for itself.</p>
+    </details>
+    <details class="ex-step">
+      <summary><span class="ex-num">3</span><span class="ex-head">Only as honest as the disclosure.</span></summary>
+      <!-- A sealed envelope: the financing terms the test cannot see. -->
+      <svg class="ex-art" width="150" height="44" viewBox="0 0 150 44" role="img" aria-label="A sealed document: where financing terms are hidden, the test cannot see them.">
+        <rect x="40" y="9" width="70" height="28" rx="3" fill="var(--surface)" stroke="var(--mid)" stroke-width="1.4"/>
+        <path d="M40 12 L75 27 L110 12" fill="none" stroke="var(--mid)" stroke-width="1.4"/>
+        <circle cx="75" cy="27" r="6" fill="var(--red)" opacity=".85"/>
+        <rect x="72.5" y="26" width="5" height="6" rx="1" fill="#fff"/>
+        <path d="M73.2 26 a1.8 1.8 0 0 1 3.6 0" fill="none" stroke="#fff" stroke-width="1"/>
+      </svg>
+      <p>NPV runs on the financing terms, costs and revenues that are actually disclosed. Where the loan
+      terms are sealed, the test cannot see the poison. The limit is disclosure, not the maths.</p>
+    </details>
   </section>
-
-  <div class="examples" id="examples">
-    <button data-example="profitable">Load: profitable corridor</button>
-    <button data-example="poisoned">Load: poisoned chalice</button>
-    <button data-example="elephant">Load: white elephant</button>
-  </div>
 
   <div class="grid">
 
     <!-- INPUT CARD -->
     <section class="card">
       <h2>The inputs</h2>
-      <p class="step-note">Each input is a step in the 16-step toolkit. Cite the source the record gives you.</p>
+      <p class="step-note">Four things from the project record. Not sure about a field? Open its <span class="help-hint">? help</span> for what to enter and where to find it.</p>
 
       <div class="field">
-        <label for="baseYear">Base year &mdash; the year the financing was signed</label>
-        <span class="hint">Year zero. Locked to signing, never to opening: delay and abandonment are already-incurred costs.</span>
-        <input type="number" id="baseYear" value="0" class="locked" readonly title="Base year is fixed at the signing year (year zero).">
-        <div class="ruling">Ruling 1 &middot; base year = year signed. Cash flows below run from this year.</div>
+        <div class="label-row">
+          <label for="baseYear">Year the deal was signed</label>
+          <details class="help"><summary aria-label="Help: year the deal was signed">?</summary>
+            <div class="help-body">
+              <p><b>What:</b> The calendar year the government signed for the money. This is &ldquo;year zero&rdquo; and is fixed, you do not change it.</p>
+              <p><b>Why it matters:</b> Counting from the signing year, not the opening year, means any delay or abandonment is still counted as a cost the public already bore.</p>
+              <p><b>Where to find it:</b> The loan agreement or financing contract date.</p>
+            </div>
+          </details>
+        </div>
+        <input type="number" id="baseYear" value="0" class="locked" readonly title="Fixed at the signing year (year zero).">
+        <span class="hint">Fixed at year zero. Every cash flow below is counted from this year.</span>
       </div>
 
       <div class="field">
-        <label for="cashflows">Net cash flow per year, from year zero</label>
-        <span class="hint">Comma-separated. Costs negative, revenue positive. Put the capital outlay first, as a negative number.</span>
+        <div class="label-row">
+          <label for="cashflows">Money in and out, year by year</label>
+          <details class="help"><summary aria-label="Help: money in and out, year by year">?</summary>
+            <div class="help-body">
+              <p><b>What:</b> One number per year, starting at the signing year. Money the public <b>pays</b> is a minus; money or savings that <b>comes back</b> is a plus.</p>
+              <p><b>Worked example:</b> the public pays 1000 up front, then gets 400 back each year for three years:</p>
+              <p class="help-eg">-1000, 400, 400, 400</p>
+              <p><b>Where to find it:</b> The feasibility study or the project&rsquo;s disclosed financial model (construction cost, then projected tolls, fees or savings).</p>
+            </div>
+          </details>
+        </div>
         <textarea id="cashflows" spellcheck="false">-1000, 400, 400, 400</textarea>
+        <span class="hint">Comma-separated. The first number is the up-front cost, as a minus.</span>
         <div class="err" id="cfErr"></div>
       </div>
 
       <div class="row2">
         <div class="field">
-          <label for="rate">Discount rate</label>
-          <span class="hint">Govt long-term bond rate at initiation.</span>
-          <input type="number" id="rate" value="8" step="0.1" min="0"> <span style="font-family:var(--mono);color:var(--mid)">%</span>
+          <div class="label-row">
+            <label for="rate">Discount rate</label>
+            <details class="help"><summary aria-label="Help: discount rate">?</summary>
+              <div class="help-body">
+                <p><b>What:</b> The yearly rate used to shrink future money back to today&rsquo;s value, as a percentage.</p>
+                <p><b>Why it matters:</b> A higher rate makes future benefits count for less, so it is harder for a project to pay for itself. Small changes can flip the verdict.</p>
+                <p><b>Where to find it:</b> Use the government&rsquo;s long-term (about 20-year) bond rate at the time the deal was signed. If unsure, 8&ndash;12% is a common range.</p>
+              </div>
+            </details>
+          </div>
+          <div class="input-suffix"><input type="number" id="rate" value="8" step="0.1" min="0"><span class="suffix">%</span></div>
         </div>
         <div class="field">
-          <label for="social">Disclosed social value</label>
-          <span class="hint">Present value. Jobs, time saved.</span>
+          <div class="label-row">
+            <label for="social">Social value claimed</label>
+            <details class="help"><summary aria-label="Help: social value claimed">?</summary>
+              <div class="help-body">
+                <p><b>What:</b> A money figure for benefits that are not direct revenue, jobs created, time saved, accidents avoided. Leave it at 0 if none is disclosed.</p>
+                <p><b>Why it matters:</b> It is easy to inflate. This tool counts it but caps it at 15% of the cost, so a weak project cannot be rescued by vague &ldquo;development&rdquo; claims.</p>
+                <p><b>Where to find it:</b> A social impact assessment or the project&rsquo;s own benefit claims, in today&rsquo;s money.</p>
+              </div>
+            </details>
+          </div>
           <input type="number" id="social" value="0" min="0">
         </div>
       </div>
@@ -256,11 +346,10 @@
       <div class="field">
         <label for="goodAsset" style="display:flex;align-items:center;gap:8px;font-weight:600">
           <input type="checkbox" id="goodAsset" style="width:auto">
-          The asset itself is socially good
+          The asset itself is genuinely useful
         </label>
-        <span class="hint">Distinguishes a poisoned chalice (good asset, bad terms) from a white elephant (the asset fails) when the verdict is red.</span>
+        <span class="hint">Only changes the wording of a red result: a useful asset with bad financing (poisoned chalice) reads differently from an asset that does not earn its cost (white elephant).</span>
       </div>
-      <div class="ruling">Ruling 2 &middot; social value can offset at most 15% of discounted cost. Beyond that you are justifying a white elephant.</div>
 
       <button type="button" id="calcBtn" class="calc-btn">Calculate the verdict</button>
     </section>
@@ -457,11 +546,6 @@ function calculate(){
   }).join('');
 }
 
-const EXAMPLES = {
-  profitable: { cf:'-1000, 400, 400, 400', rate:8,  social:0,   good:true  },
-  poisoned:   { cf:'-1000, 380, 380, 380', rate:12, social:0,   good:true  },
-  elephant:   { cf:'-1000, 120, 120, 120', rate:10, social:0,   good:false },
-};
 // When a result is on screen and the inputs change, retire it and prompt a
 // recalculation, so a stale verdict never sits next to edited inputs.
 function invalidate(){
@@ -469,17 +553,6 @@ function invalidate(){
   $('result').classList.add('hidden');
   $('stale').classList.remove('hidden');
 }
-
-// Examples pre-fill the inputs. They do NOT auto-calculate: the user still
-// presses Calculate, keeping the submit gate consistent for every path.
-document.getElementById('examples').addEventListener('click', e => {
-  const key = e.target.getAttribute('data-example'); if(!key) return;
-  const ex = EXAMPLES[key];
-  $('cashflows').value = ex.cf; $('rate').value = ex.rate;
-  $('social').value = ex.social; $('goodAsset').checked = ex.good;
-  $('cfErr').textContent = '';
-  invalidate();
-});
 
 $('calcBtn').addEventListener('click', calculate);
 ['cashflows','rate','social'].forEach(id => $(id).addEventListener('input', invalidate));
