@@ -78,6 +78,28 @@
     border-left:3px solid var(--brand-soft);padding:7px 10px;border-radius:0 6px 6px 0;margin-top:6px;
   }
 
+  .calc-btn{
+    margin-top:20px;width:100%;font-family:var(--sans);font-size:1rem;font-weight:600;
+    color:var(--white);background:var(--brand);border:1px solid var(--brand-deep);
+    border-radius:10px;padding:13px 18px;cursor:pointer;transition:background .15s;
+  }
+  .calc-btn:hover{background:var(--brand-deep)}
+  .calc-btn:focus-visible{outline:2px solid var(--brand-soft);outline-offset:2px}
+
+  /* Placeholder shown before the first calculation. */
+  .placeholder{
+    border:1px dashed #c2cdd8;border-radius:var(--radius);background:var(--surface);
+    padding:34px 24px;text-align:center;color:var(--mid);
+  }
+  .placeholder .ph-mark{letter-spacing:.5em;color:#c2cdd8;font-size:1rem;margin-bottom:14px}
+  .placeholder .ph-lead{margin:0 0 8px;font-weight:700;color:var(--brand-deep);font-size:1.05rem}
+  .placeholder .ph-sub{margin:0;font-size:.88rem;max-width:42ch;margin-inline:auto}
+
+  .stale{
+    margin-top:14px;font-size:.84rem;color:var(--amber);background:#fdf6ea;
+    border:1px solid #f0dcb4;border-radius:8px;padding:9px 12px;
+  }
+
   /* Verdict panel */
   .verdict{border-radius:var(--radius);padding:20px 22px;color:var(--white);transition:background .25s}
   .verdict.green{background:var(--green)}
@@ -93,7 +115,7 @@
   .readout dt{color:var(--mid)}
   .readout dd{margin:0;font-family:var(--mono);text-align:right;font-variant-numeric:tabular-nums;color:var(--brand-deep)}
   .flag{display:inline-block;margin-top:12px;font-size:.8rem;color:var(--amber);font-weight:600}
-  .flag.hidden{display:none}
+  .hidden{display:none !important}
 
   /* Sensitivity strip */
   .sens{margin-top:22px}
@@ -186,6 +208,8 @@
         <span class="hint">Distinguishes a poisoned chalice (good asset, bad terms) from a white elephant (the asset fails) when the verdict is red.</span>
       </div>
       <div class="ruling">Ruling 2 &middot; social value can offset at most 15% of discounted cost. Beyond that you are justifying a white elephant.</div>
+
+      <button type="button" id="calcBtn" class="calc-btn">Calculate the verdict</button>
     </section>
 
     <!-- OUTPUT CARD -->
@@ -193,24 +217,39 @@
       <h2>The verdict</h2>
       <p class="step-note">A policy message, not a go/no-go. The headline is hard NPV plus capped social value.</p>
 
-      <div class="verdict idle" id="verdict">
-        <div class="vlabel" id="vlabel">Enter the record</div>
-        <div class="vnpv" id="vnpv">&mdash;</div>
-        <div class="vmsg" id="vmsg">The traffic light follows the sign of the NPV: positive is green, break-even amber, negative red.</div>
+      <!-- Placeholder: shown until the user calculates. No result is implied. -->
+      <div class="placeholder" id="placeholder">
+        <div class="ph-mark" aria-hidden="true">&#9679;&#9679;&#9679;</div>
+        <p class="ph-lead">No verdict yet.</p>
+        <p class="ph-sub">Enter the record on the left, then press <strong>Calculate the verdict</strong>. The traffic light follows the sign of the NPV: positive is green, break-even amber, negative red.</p>
       </div>
 
-      <div class="readout">
-        <dl>
-          <dt>Hard NPV (cash flows only)</dt><dd id="r-hard">&mdash;</dd>
-          <dt>Social value applied</dt><dd id="r-social">&mdash;</dd>
-          <dt>Discounted cost base</dt><dd id="r-cost">&mdash;</dd>
-        </dl>
-        <span class="flag hidden" id="capFlag">&#9888; Social value clamped to the 15% cap.</span>
+      <!-- Result: hidden until a calculation runs; re-hidden when inputs change. -->
+      <div class="result hidden" id="result">
+        <div class="verdict idle" id="verdict">
+          <div class="vlabel" id="vlabel">&mdash;</div>
+          <div class="vnpv" id="vnpv">&mdash;</div>
+          <div class="vmsg" id="vmsg"></div>
+        </div>
+
+        <div class="readout">
+          <dl>
+            <dt>Hard NPV (cash flows only)</dt><dd id="r-hard">&mdash;</dd>
+            <dt>Social value applied</dt><dd id="r-social">&mdash;</dd>
+            <dt>Discounted cost base</dt><dd id="r-cost">&mdash;</dd>
+          </dl>
+          <span class="flag hidden" id="capFlag">&#9888; Social value clamped to the 15% cap.</span>
+        </div>
+
+        <div class="sens">
+          <h3>Sensitivity &middot; ~2pp can flip the verdict</h3>
+          <div id="sensRows"></div>
+        </div>
       </div>
 
-      <div class="sens">
-        <h3>Sensitivity &middot; ~2pp can flip the verdict</h3>
-        <div id="sensRows"></div>
+      <!-- Stale-input notice: the inputs changed after the last verdict. -->
+      <div class="stale hidden" id="stale">
+        Inputs changed. Press <strong>Calculate the verdict</strong> to refresh the result.
       </div>
     </section>
 
@@ -297,7 +336,9 @@ function parseCashflows(raw){
   });
 }
 
-function render(){
+// Calculate runs only on an explicit submission. Until then the verdict card
+// shows a neutral placeholder, so a visitor never lands on a pre-filled result.
+function calculate(){
   const cfErr = $('cfErr');
   cfErr.textContent = '';
   let cashFlows;
@@ -311,6 +352,11 @@ function render(){
   let res;
   try { res = computeNpv({ cashFlows, discountRate, socialValue }); }
   catch(e){ cfErr.textContent = e.message; return; }
+
+  // Reveal the result, retire the placeholder and any stale notice.
+  $('placeholder').classList.add('hidden');
+  $('stale').classList.add('hidden');
+  $('result').classList.remove('hidden');
 
   const v = $('verdict');
   v.className = 'verdict ' + res.verdict;
@@ -346,16 +392,29 @@ const EXAMPLES = {
   poisoned:   { cf:'-1000, 380, 380, 380', rate:12, social:0,   good:true  },
   elephant:   { cf:'-1000, 120, 120, 120', rate:10, social:0,   good:false },
 };
+// When a result is on screen and the inputs change, retire it and prompt a
+// recalculation, so a stale verdict never sits next to edited inputs.
+function invalidate(){
+  if($('result').classList.contains('hidden')) return;
+  $('result').classList.add('hidden');
+  $('stale').classList.remove('hidden');
+}
+
+// Examples pre-fill the inputs. They do NOT auto-calculate: the user still
+// presses Calculate, keeping the submit gate consistent for every path.
 document.getElementById('examples').addEventListener('click', e => {
   const key = e.target.getAttribute('data-example'); if(!key) return;
   const ex = EXAMPLES[key];
   $('cashflows').value = ex.cf; $('rate').value = ex.rate;
   $('social').value = ex.social; $('goodAsset').checked = ex.good;
-  render();
+  $('cfErr').textContent = '';
+  invalidate();
 });
-['cashflows','rate','social'].forEach(id => $(id).addEventListener('input', render));
-$('goodAsset').addEventListener('change', render);
-render();
+
+$('calcBtn').addEventListener('click', calculate);
+['cashflows','rate','social'].forEach(id => $(id).addEventListener('input', invalidate));
+$('goodAsset').addEventListener('change', invalidate);
+// No calculate() on load: the placeholder is the default state.
 </script>
 </body>
 </html>
