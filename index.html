@@ -63,6 +63,24 @@
     .daycol a.enter:hover{background:var(--brand-deep);}
     .micro{max-width:920px;margin:1.8rem auto 0;padding:0 1.2rem;color:var(--mid);font-size:.92rem;text-align:center;}
     .micro b{color:var(--dark);}
+    /* Standalone tool card: distinct from the day cards (navy fill, full width). */
+    .toolcard{display:flex;align-items:center;gap:1.2rem;margin:1.2rem auto 0;padding:1.1rem 1.3rem;
+      background:var(--brand-deep);border-radius:var(--radius);box-shadow:var(--shadow);
+      text-decoration:none;color:#fff;transition:background .15s;}
+    .toolcard:hover{background:#0e1b29;}
+    .toolcard-art{flex:0 0 auto;display:inline-flex;flex-direction:column;gap:5px;padding:6px 5px;
+      border-radius:7px;background:rgba(255,255,255,.08);}
+    .toolcard-art .lamp{width:12px;height:12px;border-radius:50%;}
+    .toolcard-art .lamp.red{background:#ff6670;box-shadow:0 0 7px #ff6670;}
+    .toolcard-art .lamp.amber{background:rgba(255,206,90,.45);}
+    .toolcard-art .lamp.green{background:#3ddc7a;box-shadow:0 0 7px #3ddc7a;}
+    .toolcard-body{flex:1;}
+    .toolcard-body .tooltag{font-family:var(--mono);font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#8fb4d6;}
+    .toolcard-body h2{margin:.18rem 0 .3rem;font-size:1.18rem;font-weight:800;letter-spacing:-.01em;color:#fff;}
+    .toolcard-body p{margin:0;font-size:.86rem;color:#c2d2e2;line-height:1.45;}
+    .toolcard-go{flex:0 0 auto;font-family:var(--mono);font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:#fff;white-space:nowrap;}
+    .toolcard-go .arr{color:#8fb4d6;}
+    @media(max-width:640px){.toolcard{flex-direction:column;align-items:flex-start;gap:.8rem;}}
     footer{max-width:920px;margin:2.4rem auto 3.5rem;padding:1.3rem 1.2rem 0;border-top:1px solid var(--light);font-size:.8rem;color:var(--mid);}
     footer strong{color:var(--dark);}
 
@@ -154,7 +172,6 @@
         <p class="dq">The question sharpens: not "is it good?" but "are we even allowed to find out?"</p>
         <a class="go" href="day2/disclosure-vs-npv-correlation.html">You cannot assess what you are not allowed to see <span class="arr">&rarr;</span><span class="sub">Disclosure does not make a project good, it is the only thing that lets you find out</span></a>
         <a class="go" href="modality-risk-map.html">What each funding source hides <span class="arr">&rarr;</span><span class="sub">How much you get to see depends on where the money comes from</span></a>
-        <a class="go" href="npv-calculator.html">Is this investment worth it? <span class="arr">&rarr;</span><span class="sub">The NPV calculator, the third-leg toolkit you can run yourself</span></a>
         <a class="enter" href="day2/">Enter Day 2</a>
       </div>
       <div class="daycol">
@@ -165,6 +182,19 @@
         <a class="enter" href="day3/">Enter Day 3</a>
       </div>
     </div>
+
+    <!-- Standalone tool, not tied to a day. The NPV calculator. -->
+    <a class="toolcard" href="npv-calculator.html">
+      <div class="toolcard-art" aria-hidden="true">
+        <span class="lamp red"></span><span class="lamp amber"></span><span class="lamp green"></span>
+      </div>
+      <div class="toolcard-body">
+        <span class="tooltag">Tool &middot; use it anytime</span>
+        <h2>Does a project pay for itself?</h2>
+        <p>An NPV calculator that turns a project's disclosed numbers into a plain traffic-light verdict, with the financing terms doing the work. Walk through it yourself.</p>
+      </div>
+      <span class="toolcard-go">Open the calculator <span class="arr">&rarr;</span></span>
+    </a>
 
     <p class="micro">Each piece answers <b>one question</b>, walked through, not just charted. The visual is chosen so its first reading is the finding, and where the evidence is thin it says so on the chart itself.</p>
 
