@@ -48,6 +48,22 @@
   h1{margin:0 0 12px;font-size:clamp(1.8rem,3.6vw,2.7rem);line-height:1.05;color:var(--brand-deep)}
   .lede{margin:0;max-width:64ch;color:var(--mid);font-size:1.04rem}
 
+  /* Plain-language explainer band: three steps, concept then disclosure problem. */
+  .explainer{
+    display:grid;grid-template-columns:1fr;gap:14px;margin:0 0 30px;
+    background:var(--white);border:1px solid var(--light);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:22px 22px 24px;
+  }
+  @media(min-width:760px){.explainer{grid-template-columns:repeat(3,1fr);gap:24px}}
+  .ex-step{display:flex;gap:12px;align-items:flex-start}
+  .ex-step .ex-num{
+    flex:0 0 auto;width:26px;height:26px;border-radius:50%;
+    background:var(--brand);color:var(--white);font-family:var(--mono);font-size:.82rem;
+    display:flex;align-items:center;justify-content:center;font-weight:700;margin-top:2px;
+  }
+  .ex-step p{margin:0;font-size:.9rem;color:var(--mid);line-height:1.5}
+  .ex-step strong{color:var(--brand-deep)}
+
   .grid{display:grid;grid-template-columns:1fr;gap:22px}
   @media(min-width:760px){.grid{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr)}}
 
@@ -106,9 +122,24 @@
   .verdict.amber{background:var(--amber)}
   .verdict.red{background:var(--red)}
   .verdict.idle{background:var(--brand-deep)}
+  .verdict .verdict-head{display:flex;align-items:center;gap:14px;margin-bottom:6px}
   .verdict .vlabel{font-family:var(--mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;opacity:.85}
+  .verdict .vmean{font-size:1.02rem;font-weight:700;margin-top:2px}
   .verdict .vnpv{font-size:2.1rem;font-weight:700;margin:4px 0 2px;font-variant-numeric:tabular-nums}
   .verdict .vmsg{font-size:.92rem;margin-top:8px;opacity:.96}
+
+  /* Traffic-light signal: three lamps in a housing. Lit lamp glows by verdict. */
+  .signal{
+    display:inline-flex;flex-direction:column;gap:6px;padding:7px 6px;border-radius:9px;
+    background:rgba(0,0,0,.22);
+  }
+  .signal .lamp{width:15px;height:15px;border-radius:50%;background:rgba(255,255,255,.16)}
+  .verdict.green .signal .lamp.green{background:#3ddc7a;box-shadow:0 0 9px #3ddc7a}
+  .verdict.amber .signal .lamp.amber{background:#ffce5a;box-shadow:0 0 9px #ffce5a}
+  .verdict.red   .signal .lamp.red{background:#ff6670;box-shadow:0 0 9px #ff6670}
+  /* Off-state housing in the placeholder, on the light surface. */
+  .placeholder .signal{background:#e5ebf1;margin:0 auto 16px}
+  .placeholder .signal .lamp{background:#cdd7e1}
 
   .readout{margin-top:16px;border-top:1px solid var(--light);padding-top:14px}
   .readout dl{display:grid;grid-template-columns:1fr auto;gap:6px 14px;margin:0;font-size:.88rem}
@@ -151,14 +182,36 @@
   </div>
 
   <header class="intro">
-    <p class="kicker">The third leg &middot; is this investment worth it?</p>
-    <h1>Net Present Value, the InfraWatch way</h1>
+    <p class="kicker">Net present value &middot; does the project pay for itself?</p>
+    <h1>Testing whether a public project pays for itself</h1>
     <p class="lede">
-      NPV tests whether a publicly funded project at least pays for its own costs over its life.
-      It is only as honest as its disclosed financing terms. Enter what the record shows, watch the
-      verdict move, and read the result as a policy message, not a yes or no.
+      Net present value (NPV) compares what the public pays for an infrastructure project with what
+      it gets back over the project&rsquo;s life, with future money pulled back to what it is worth today.
+      Enter what the record shows and read the result as a policy message, not a yes or no.
     </p>
   </header>
+
+  <!-- Plain-language explainer: the concept and the problem it solves. Not a pitch. -->
+  <section class="explainer">
+    <div class="ex-step">
+      <span class="ex-num">1</span>
+      <p><strong>Money today is worth more than money tomorrow.</strong> A shilling spent now could have
+      earned interest, so a shilling returned in ten years is worth less than one returned today.
+      NPV accounts for that gap with a discount rate.</p>
+    </div>
+    <div class="ex-step">
+      <span class="ex-num">2</span>
+      <p><strong>Discount the future, then compare.</strong> Pull every future cost and benefit back to
+      today&rsquo;s value, add them up, and set the total against what the public paid up front. If the
+      discounted benefits clear the costs, the project pays for itself.</p>
+    </div>
+    <div class="ex-step">
+      <span class="ex-num">3</span>
+      <p><strong>The answer is only as honest as the disclosure.</strong> NPV runs on the financing terms,
+      costs and revenues that are actually disclosed. Where the loan terms are sealed, the test cannot
+      see the poison. The limit is disclosure, not the maths.</p>
+    </div>
+  </section>
 
   <div class="examples" id="examples">
     <button data-example="profitable">Load: profitable corridor</button>
@@ -219,15 +272,25 @@
 
       <!-- Placeholder: shown until the user calculates. No result is implied. -->
       <div class="placeholder" id="placeholder">
-        <div class="ph-mark" aria-hidden="true">&#9679;&#9679;&#9679;</div>
+        <div class="signal off" aria-hidden="true">
+          <span class="lamp red"></span><span class="lamp amber"></span><span class="lamp green"></span>
+        </div>
         <p class="ph-lead">No verdict yet.</p>
-        <p class="ph-sub">Enter the record on the left, then press <strong>Calculate the verdict</strong>. The traffic light follows the sign of the NPV: positive is green, break-even amber, negative red.</p>
+        <p class="ph-sub">Enter the record on the left, then press <strong>Calculate the verdict</strong>. The light reads the sign of the NPV: green pays for itself, amber breaks even, red costs more than it returns.</p>
       </div>
 
       <!-- Result: hidden until a calculation runs; re-hidden when inputs change. -->
       <div class="result hidden" id="result">
         <div class="verdict idle" id="verdict">
-          <div class="vlabel" id="vlabel">&mdash;</div>
+          <div class="verdict-head">
+            <div class="signal" id="signal" aria-hidden="true">
+              <span class="lamp red"></span><span class="lamp amber"></span><span class="lamp green"></span>
+            </div>
+            <div>
+              <div class="vlabel" id="vlabel">&mdash;</div>
+              <div class="vmean" id="vmean"></div>
+            </div>
+          </div>
           <div class="vnpv" id="vnpv">&mdash;</div>
           <div class="vmsg" id="vmsg"></div>
         </div>
@@ -313,18 +376,24 @@ function sensitivityByRate(base, rates){
 }
 function policyMessage(result, good){
   if(result.verdict === 'green')
-    return 'Positive NPV. The investment at least pays for its own costs over its life. Proceed and plan.';
+    return 'On the disclosed numbers, the discounted benefits clear the discounted costs. The project pays for itself in today’s money.';
   if(result.verdict === 'amber')
-    return 'Break-even NPV. Rethink the financing to cut costs or surface positive outcomes before committing.';
+    return 'On the disclosed numbers, benefits and costs roughly cancel out. Small shifts in the financing terms could tip it either way, so the assumptions deserve scrutiny.';
   return good
-    ? 'Negative NPV, but the asset is socially good. The financing mechanism is making it negative: change the financing or stop the project (poisoned chalice).'
-    : 'Negative NPV on the asset’s own merits. No economic justification to proceed (white elephant).';
+    ? 'The discounted costs exceed the discounted benefits, but the asset itself is useful. The financing mechanism is what makes it negative: this is a poisoned chalice, fixable by changing the financing rather than abandoning the project.'
+    : 'The discounted costs exceed the discounted benefits on the project’s own merits, not just its financing. This is a white elephant: the asset does not return enough public value to justify its cost.';
 }
 
 /* ---------------------------- UI wiring ---------------------------------- */
 const $ = id => document.getElementById(id);
 const fmt = n => (n>=0?'':'−') + Math.abs(Math.round(n)).toLocaleString('en-US');
-const VERDICT_LABEL = { green:'Proceed', amber:'Break-even', red:'Do not proceed' };
+const VERDICT_LABEL = { green:'Green', amber:'Amber', red:'Red' };
+// Plain-English meaning of each light, for a reader who does not work in finance.
+const VERDICT_MEANING = {
+  green:'The project pays for itself',
+  amber:'The project roughly breaks even',
+  red:'The project costs more than it returns',
+};
 
 function parseCashflows(raw){
   const parts = raw.split(',').map(s => s.trim()).filter(s => s.length);
@@ -361,6 +430,7 @@ function calculate(){
   const v = $('verdict');
   v.className = 'verdict ' + res.verdict;
   $('vlabel').textContent = VERDICT_LABEL[res.verdict];
+  $('vmean').textContent = VERDICT_MEANING[res.verdict];
   $('vnpv').textContent = fmt(res.npv);
   $('vmsg').textContent = policyMessage(res, good);
 
