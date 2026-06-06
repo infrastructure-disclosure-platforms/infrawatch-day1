@@ -36,9 +36,15 @@
     padding:14px 0;border-bottom:1px solid var(--light);margin-bottom:26px;
   }
   .brandbar .dot{width:12px;height:12px;border-radius:50%;background:var(--brand)}
+  .brandhome{display:inline-flex;align-items:center;gap:12px;text-decoration:none}
+  .brandhome:hover .brand{color:var(--brand)}
   .brand{font-weight:700;letter-spacing:.2px;color:var(--brand-deep)}
   .brandbar .div{color:var(--light)}
   .brandbar .tool{color:var(--mid);font-size:.92rem}
+  .backlink{margin-left:auto;font-family:var(--mono);font-size:.78rem;font-weight:700;
+    color:var(--brand);text-decoration:none;border:1px solid var(--brand-soft);
+    border-radius:20px;padding:5px 13px;transition:.15s;white-space:nowrap}
+  .backlink:hover{background:var(--brand);color:#fff;border-color:var(--brand)}
 
   header.intro{margin-bottom:30px}
   .kicker{
@@ -206,10 +212,13 @@
 <div class="shell">
 
   <div class="brandbar">
-    <span class="dot"></span>
-    <span class="brand">InfraWatch</span>
+    <a class="brandhome" href="./" aria-label="Back to the InfraWatch landing page">
+      <span class="dot"></span>
+      <span class="brand">InfraWatch</span>
+    </a>
     <span class="div">&middot;</span>
     <span class="tool">NPV Calculator</span>
+    <a class="backlink" href="./">&larr; All InfraWatch</a>
   </div>
 
   <header class="intro">
